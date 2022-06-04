@@ -5,7 +5,7 @@
 #include <fstream>
 #include <vector>
 
-namespace li {
+namespace CAP {
 
 	enum { FAIL ,     // Node is bad 
 		   MULTIPLE, // Node is structured on multiple levels
