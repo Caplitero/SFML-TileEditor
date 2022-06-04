@@ -59,13 +59,24 @@ namespace CAP {
 					Search.push_back(Buffer[position]); // Read data
 				position++;                        // Go to next character
 
+				
 
-				if (Buffer[position] == ' ' && tag.empty())
+
+				 if (Buffer[position] == ' '  && tag.empty())
 				{
+					
 					tag = Search;   // Add node tag
 					position++;          // The data ends on the next position
 					Search.clear();     // Clear vector for the next data input
 				}
+				 
+				 else if (Buffer[position + 1] == '>' && Buffer[position] != '?' && tag.empty()) // Nodes with no keys
+				 {
+					 Search.push_back(Buffer[position]);
+					 tag = Search;        // Add node tag
+					 position++;          // The data ends on the next position
+					 Search.clear();     // Clear vector for the next data input
+				 }
 
 				if (Buffer[position] == '=')
 				{
@@ -146,13 +157,22 @@ namespace CAP {
 							Search.clear(); // Clear vector for next data imput
 						}
 
+						if (Buffer[position + 1] == '!' && Buffer[position + 2] == '-' ) // Check for comments
+						{   
+							while (Buffer[position] != '>')position++;   // Comments are useless for the program so it will be parsed but ignored
+							continue;    // Node done , search for the next one , breaking the if 
+						}
+
 						if (Buffer[position + 1] == '/')
 						{
 							position += 2;    //  '/' marks the end of a node , and the name start 2 spaces later
 							while (Buffer[position] != '>')
-								Search.push_back(Buffer[position++]); // Read the end tag found
-
-							if (Root->tag != Search)                 // Eevery node contains a Start_node 
+								Search.push_back(Buffer[position++]);
+							
+							
+							// Read the end tag found
+							
+							if (Root->tag != Search )    // Eevery node contains a Start_node 
 							{
 								std::cout << Search << " Tag missmatch" << Root->tag << "\n";
 								return Fail;
@@ -186,9 +206,9 @@ namespace CAP {
 
 						if (Root->find_attrs(Buffer, position) == SINGLE)
 						{ // Some Nodes are on a single line and dont have children
-
+							
 							Root = Root->parent; // If the Node is inline we return to it's parent
-
+							
 							position++;  // Continue the search 
 							continue;   // Skip to the next node
 						}
