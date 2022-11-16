@@ -43,7 +43,7 @@ namespace CAP {
 			for (XMLAttribute& attr : AttributesList)
 				if (attr.key == Key) { return attr.value; break; }
 
-			return 0;
+			return "\0";
 		}
 
 

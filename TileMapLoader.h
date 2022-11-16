@@ -6,11 +6,12 @@
 namespace CAP {
 
 	struct _TileSet
-	{
+	{   
 		std::string  name;
 		std::string  image;
-		int tilewidth;
-		int tileheight;
+		int          tilewidth;
+		int          tileheight;
+
 		_TileSet(_Node* doc)
 		{
 
@@ -151,43 +152,64 @@ namespace CAP {
 	class SFMLMap : public sf::Drawable {
 		sf::Texture m_texture;
 		sf::VertexArray m_vertices;
+
+		std::string _FOLDER;
+		std::string _FILE;
 	public:
+		TileMapFile doc;
 		SFMLMap(std::string Folder, std::string FILE)
 		{
-			TileMapFile doc;
+			_FOLDER = Folder;
+			_FILE = FILE;
+		}
 
-			doc.load(Folder, FILE);
-			m_texture.loadFromFile(Folder + doc.TileSets[0].image);
-			std::cout << doc.TileSets[0].name << "\n";
-			int dis = m_texture.getSize().x / doc.width;
-			m_vertices.setPrimitiveType(sf::Quads);
-			m_vertices.resize(doc.TileLayers[0].columns * doc.TileLayers[0].rows * 4);
+		
+		bool load()
+		{
+			
 
-			for (int i = 0; i < doc.TileLayers[0].rows; i++)
-
-				for (int j = 0; j < doc.TileLayers[0].columns; j++)
+			if (doc.load(_FOLDER, _FILE) == Successful)
+			{   
+				if (doc.TileSets.size())
 				{
-					int index = (j + i * doc.TileLayers[0].columns) * 4;
-					int gid = doc.TileLayers[0].lay[j + i * doc.TileLayers[0].columns];
+					
+					m_texture.loadFromFile(_FOLDER + doc.TileSets[0].image);
+					std::cout << doc.TileSets[0].name << "\n";
+					int dis = m_texture.getSize().x / doc.width;
+					m_vertices.setPrimitiveType(sf::Quads);
+					m_vertices.resize(doc.TileLayers[0].columns * doc.TileLayers[0].rows * 4);
 
-					sf::Vertex* vertex = &m_vertices[index];
-					vertex[0].position = sf::Vector2f(doc.width * j, doc.height * i);
-					vertex[1].position = sf::Vector2f((j + 1) * doc.width, i * doc.height);
-					vertex[2].position = sf::Vector2f((j + 1) * doc.width, (i + 1) * doc.height);
-					vertex[3].position = sf::Vector2f(j * doc.width, (i + 1) * doc.height);
+					for (int i = 0; i < doc.TileLayers[0].rows; i++)
 
-					int colp = gid % dis -1;
-					int rowp = gid / dis;
+						for (int j = 0; j < doc.TileLayers[0].columns; j++)
+						{
+							int index = (j + i * doc.TileLayers[0].columns) * 4;
+							int gid = doc.TileLayers[0].lay[j + i * doc.TileLayers[0].columns];
 
-					vertex[0].texCoords = sf::Vector2f(doc.width * colp, doc.height * rowp);
-					vertex[1].texCoords = sf::Vector2f((colp + 1) * doc.width, rowp * doc.height);
-					vertex[2].texCoords = sf::Vector2f((colp + 1) * doc.width, (rowp + 1) * doc.height);
-					vertex[3].texCoords = sf::Vector2f(colp * doc.width, (rowp + 1) * doc.height);
+							sf::Vertex* vertex = &m_vertices[index];
+							vertex[0].position = sf::Vector2f(doc.width * j, doc.height * i);
+							vertex[1].position = sf::Vector2f((j + 1) * doc.width, i * doc.height);
+							vertex[2].position = sf::Vector2f((j + 1) * doc.width, (i + 1) * doc.height);
+							vertex[3].position = sf::Vector2f(j * doc.width, (i + 1) * doc.height);
+
+							int colp = gid % dis - 1;
+							int rowp = gid / dis;
+
+							vertex[0].texCoords = sf::Vector2f(doc.width * colp, doc.height * rowp);
+							vertex[1].texCoords = sf::Vector2f((colp + 1) * doc.width, rowp * doc.height);
+							vertex[2].texCoords = sf::Vector2f((colp + 1) * doc.width, (rowp + 1) * doc.height);
+							vertex[3].texCoords = sf::Vector2f(colp * doc.width, (rowp + 1) * doc.height);
 
 
+						}
+					
 				}
-
-
+				std::cout << _FILE << ": no tileset loaded... \n";
+				return 1;
+			
+			}
+			std::cout << "\n" << _FILE << " failed to load... \n";
+			return 0;
 		}
 
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const {
