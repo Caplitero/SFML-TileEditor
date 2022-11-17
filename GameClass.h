@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "TileMapLoader.h"
+#include "H_Objects_.h"
 
 class SFMLWindow :  sf::RenderWindow,sf::Clock
 {
@@ -113,14 +114,23 @@ private:
 	virtual void onCreate()override
 	{
 		Map = new CAP::SFMLMap("", "untitled.tmx");
+		All_objects_Class Enviorment;
+		
+
 		if (Map->load())
 		{
 			if(Map->doc.ObjectLayers.size())
 			{   
-				for( auto& attr: Map->doc.ObjectLayers[0].Children)
-				std::cout <<  attr->find_keyValue("class");
+				for (auto& attr : Map->doc.ObjectLayers[0].Children)
+				{
+					std::string Class= attr->find_keyValue("class");
+					Enviorment.add_newItem(Class,attr);
+				}
+				// the attr will also contain coordonates 
+				// and the other data about the object
 			}
 		}
+		std::cout<<Enviorment.All_Objects[0].X;
 		setFramerateLimit(60);    
 		setVerticalSyncEnabled(0);
 		

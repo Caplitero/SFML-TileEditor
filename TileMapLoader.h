@@ -204,7 +204,10 @@ namespace CAP {
 						}
 					
 				}
+				else 
 				std::cout << _FILE << ": no tileset loaded... \n";
+
+				
 				return 1;
 			
 			}
