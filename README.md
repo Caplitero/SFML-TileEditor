@@ -2,6 +2,13 @@
 
 This project is open source .
 
+### Update 17/11/2022 :
+  + You can now create your own Classes and customize how the    
+    object is made in ALL_OBJECTS_CLASS    
+    Give the object a class tag and the function it will use on create   
+    (Do not change anything in H_object.cpp)
+    
+
 ### Update 16/11/2022 :
   + Solved the find_keyValue String error
   + Solved the map loading vector error    
