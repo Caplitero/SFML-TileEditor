@@ -2,6 +2,13 @@
 
 This project is open source .
 
+### Major_PATCH 19/11/2022:
+  + All Game OBJECTS are now defined by the Class _Object   
+  and they must have a Constructor, get_CLass that returns the name of the object   
+  and an outside defined function named Init that you will use to create new objects of that type   
+  
+
+
 ### Update 17/11/2022 :
   + You can now create your own Classes and customize how the    
     object is made in ALL_OBJECTS_CLASS    
