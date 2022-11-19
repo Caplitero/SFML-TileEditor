@@ -6,7 +6,10 @@ This project is open source .
   + All Game OBJECTS are now defined by the Class _Object   
   and they must have a Constructor, get_CLass that returns the name of the object   
   and an outside defined function named Init that you will use to create new objects of that type   
-  
+  ! Note that we use a class that stores all the Object vectors and we must set it as static    
+  because of warning erros   
+  ! To actually access the Class, you must create an object right after it (GIVEMEDATA)   
+  ![Example](HowToCreateNewObject.png) 
 
 
 ### Update 17/11/2022 :
