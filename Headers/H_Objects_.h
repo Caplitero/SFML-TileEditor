@@ -9,19 +9,19 @@
 class _Object
 {
 	
-
     public:
-		virtual void Init(CAP::_Node* Data ) 
-		{ std::cout << "empty Init"; }
-		std::function<void(CAP::_Node*Data )> get_Init()
-		{
-			return [&](CAP::_Node* Data ) {Init(Data);};
-		};
-		virtual std::string get_Class()
-		{
-			return "_Object";
-		}
-		_Object(){}
+	virtual void Init(CAP::_Node* Data ) 
+	{ std::cout << "empty Init"; }
+
+	std::function<void(CAP::_Node*Data )> get_Init()
+	{
+	  return [&](CAP::_Node* Data ) {Init(Data);};
+	};
+	virtual std::string get_Class()
+	{
+	return "_Object";
+	}
+	_Object(){}
 	
 };
 
@@ -88,35 +88,39 @@ public:
 };
 
 
-static class ALLOBJECTS {
+static class Environment_Init
+{
+	std::vector < _Object* > DataSheet=
+		{
+		dynamic_cast<_Object*>(new Walls()),
+		dynamic_cast<_Object*>(new Enemy()) };
+
+	 void init_OBJ_vec();
+public:
+	
+	Environment_Init() { init_OBJ_vec();}
+	
+    void add_newItem(std::string Class, CAP::_Node* Child);
+    ~Environment_Init()
+	{
+		for (auto Item : DataSheet)
+			delete(Item);
+	}
+};
+
+static class All_Objects_Vec {
 public:
 	std::vector<Enemy> ENEMIES;
-}GIVEMMEDATA;
+}Env_data;
 
-inline void Enemy::Init(CAP::_Node * Data)
+
+inline void Enemy::Init(CAP::_Node* Data)
 {
 	std::cout << "new enemy is created";
 	float nx = atof(Data->find_keyValue("x").c_str());
 	float ny = atof(Data->find_keyValue("y").c_str());
 	Enemy NewN(nx, ny);
-	GIVEMMEDATA.ENEMIES.push_back(NewN);
+	Env_data.ENEMIES.push_back(NewN);
+	
 }
-
-
-class All_objects_Class
-{
-    
-
-	std::vector < _Object* > DataSheet =
-	{
-		dynamic_cast<_Object*>(new Walls()),
-		dynamic_cast<_Object*>(new Enemy())
-	};
-	
-	void init_OBJ_vec();
-public:
-	
-	All_objects_Class() { init_OBJ_vec();}
-	void add_newItem(std::string Class, CAP::_Node* Child);
-};
 

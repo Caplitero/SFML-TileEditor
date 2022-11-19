@@ -115,9 +115,8 @@ private:
 	virtual void onCreate()override
 	{
 		Map = new CAP::SFMLMap("", "untitled.tmx");
-		All_objects_Class Enviorment;
-		
-		
+		Environment_Init Env;
+	
 		if (Map->load())
 		{
 			if(Map->doc.ObjectLayers.size())
@@ -125,13 +124,14 @@ private:
 				for (auto& attr : Map->doc.ObjectLayers[0].Children)
 				{
 					std::string Class= attr->find_keyValue("class");
-					Enviorment.add_newItem(Class, attr);
+					Env.add_newItem(Class, attr);
 				}
 				// the attr will also contain coordonates 
 				// and the other data about the object
 			}
 		}
-		std::cout << GIVEMMEDATA.ENEMIES[0].x;
+		
+		std::cout << Env_data.ENEMIES[0].x;
 		setFramerateLimit(60);    
 		setVerticalSyncEnabled(0);
 		

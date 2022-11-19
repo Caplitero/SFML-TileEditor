@@ -11,7 +11,7 @@ long int HashConversion(std::string Class)
 	return hash % t_size;
 }
 
-void All_objects_Class::init_OBJ_vec()
+void Environment_Init::init_OBJ_vec()
 {
 	std::vector<_Object*> NewDataSheet;
 	NewDataSheet.resize(1024);
@@ -23,7 +23,7 @@ void All_objects_Class::init_OBJ_vec()
 	
 }
 
-void All_objects_Class::add_newItem(std::string Class,CAP::_Node* Child)
+void Environment_Init::add_newItem(std::string Class,CAP::_Node* Child)
 {
 	_Object *Item = DataSheet[HashConversion(Class)];
 	auto lambda = Item->get_Init();
