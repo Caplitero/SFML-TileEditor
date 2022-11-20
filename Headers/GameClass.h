@@ -121,10 +121,10 @@ private:
 		{
 			if(Map->doc.ObjectLayers.size())
 			{    
-				if(!Map->doc.ObjectLayers.empty())
+				
 				for( auto & Layer : Map->doc.ObjectLayers)
 				{ 
-				  if(!Layer.Children.empty())
+				  
 				  for (auto& attr : Layer.Children)
 				  {
 						 Env.add_newItem(attr);
