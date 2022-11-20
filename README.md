@@ -4,7 +4,7 @@ This project is open source .
 
 ### Major_PATCH 20/11/2022:
   + Remove the get_Claass() function from objects
-  + _Objects class with now be defined in tiled but type int for example 0 for walls , 1 for enemies   
+  + _Objects class with now be defined in tiled with type int for example 0 for walls , 1 for enemies   
   ! TO DO (READ CUSTOM CLASSES FROM TILED MAP)
   
 
