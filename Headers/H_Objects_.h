@@ -86,12 +86,11 @@ public:
 	void add_newItem(CAP::_Node* Child)
 	{
 		std::string CLASS = Child->find_keyValue("class");
-		_Object* Item = DataSheet[atoi(CLASS.c_str())];
-		auto lambda = Item->get_Init();
-
-		if (Item != nullptr && CLASS.size())
+		if (atoi(CLASS.c_str()) < DataSheet.size() && !CLASS.empty())
 		{
-			lambda(Child);
+			_Object* Item = DataSheet[atoi(CLASS.c_str())];
+			auto lambda = Item->get_Init();
+            lambda(Child);
 
 		}
 	}
