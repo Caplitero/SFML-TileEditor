@@ -115,15 +115,15 @@ namespace CAP {
 					}
 
 					if (child->tag == "objectgroup")    // Save all object layers
+					{
 						ObjectLayers.push_back(*child);
+					}
 
 					if (child->tag == "imagelayer")    // Save all image layers
 						Imagelayers.push_back(*child);
 					if (child->tag == "layer")
 					{
-
 						TileLayers.push_back(_TileLayer(*child));
-
 					}
 
 

@@ -17,10 +17,7 @@ class _Object
 	{
 	  return [&](CAP::_Node* Data ) {Init(Data);};
 	};
-	virtual std::string get_Class()
-	{
-	return "_Object";
-	}
+
 	_Object(){}
 	
 };
@@ -38,10 +35,6 @@ public:
 	int x ;
 	int y ;
 
-	virtual std::string get_Class()
-	{
-		return "wall";
-	}
 
 	Walls()
 	{
@@ -65,15 +58,6 @@ public:
 	
 	float x;
 	float y;
-	virtual std::string get_Class()
-	{
-		return "enemy";
-	}
-	virtual int get_Id()
-	{
-		return 2;
-		
-	}
 
 	Enemy()
 	{
@@ -95,12 +79,23 @@ static class Environment_Init
 		dynamic_cast<_Object*>(new Walls()),
 		dynamic_cast<_Object*>(new Enemy()) };
 
-	 void init_OBJ_vec();
 public:
 	
-	Environment_Init() { init_OBJ_vec();}
+	Environment_Init() { }
 	
-    void add_newItem(std::string Class, CAP::_Node* Child);
+	void add_newItem(CAP::_Node* Child)
+	{
+		std::string CLASS = Child->find_keyValue("class");
+		_Object* Item = DataSheet[atoi(CLASS.c_str())];
+		auto lambda = Item->get_Init();
+
+		if (Item != nullptr && CLASS.size())
+		{
+			lambda(Child);
+
+		}
+	}
+
     ~Environment_Init()
 	{
 		for (auto Item : DataSheet)
@@ -116,7 +111,6 @@ public:
 
 inline void Enemy::Init(CAP::_Node* Data)
 {
-	std::cout << "new enemy is created";
 	float nx = atof(Data->find_keyValue("x").c_str());
 	float ny = atof(Data->find_keyValue("y").c_str());
 	Enemy NewN(nx, ny);

@@ -120,21 +120,23 @@ private:
 		if (Map->load())
 		{
 			if(Map->doc.ObjectLayers.size())
-			{   
-				for (auto& attr : Map->doc.ObjectLayers[0].Children)
-				{
-					std::string Class= attr->find_keyValue("class");
-					Env.add_newItem(Class, attr);
+			{    
+				for( auto & Layer : Map->doc.ObjectLayers)
+				{ 
+				  for (auto& attr : Layer.Children)
+				  {
+						 Env.add_newItem(attr);
+				  }
+				  // the attr will also contain coordonates 
+				  // and the other data about the object
 				}
-				// the attr will also contain coordonates 
-				// and the other data about the object
 			}
 		}
+		std::cout<<Env_data.ENEMIES[0].x;
 		
-		std::cout << Env_data.ENEMIES[0].x;
 		setFramerateLimit(60);    
 		setVerticalSyncEnabled(0);
-		
+		delete(Map);
 
 	}
 
