@@ -134,7 +134,7 @@ private:
 				}
 			}
 		}
-		std::cout<<Env_data.ENEMIES[0].x;
+		std::cout<<Env_data.ENEMIES[0].y;
 		
 		setFramerateLimit(60);    
 		setVerticalSyncEnabled(0);

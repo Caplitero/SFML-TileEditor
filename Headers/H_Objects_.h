@@ -81,11 +81,14 @@ static class Environment_Init
 
 public:
 	
+	std::vector<Enemy> ENEMIES;
+
 	Environment_Init() { }
 	
 	void add_newItem(CAP::_Node* Child)
 	{
 		std::string CLASS = Child->find_keyValue("class");
+		
 		if (atoi(CLASS.c_str()) < DataSheet.size() && !CLASS.empty())
 		{
 			_Object* Item = DataSheet[atoi(CLASS.c_str())];
@@ -100,12 +103,8 @@ public:
 		for (auto Item : DataSheet)
 			delete(Item);
 	}
-};
-
-static class All_Objects_Vec {
-public:
-	std::vector<Enemy> ENEMIES;
 }Env_data;
+
 
 
 inline void Enemy::Init(CAP::_Node* Data)
