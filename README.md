@@ -2,6 +2,13 @@
 
 This project is open source .
 
+### Major_PATCH 20/11/2022:
+  + Remove the get_Claass() function from objects
+  + _Objects class with now be defined in tiled but type int for example 0 for walls , 1 for enemies   
+  ! TO DO (READ CUSTOM CLASSES FROM TILED MAP)
+  
+
+
 ### Major_PATCH 19/11/2022:
   + All Game OBJECTS are now defined by the Class _Object   
   and they must have a Constructor, get_CLass that returns the name of the object   
