@@ -2,6 +2,9 @@
 
 This project is open source .
 
+### Update 21/11/2022:
+  + A json parser has been added and will be used to load custom classes from Tiled
+
 ### Major_PATCH 20/11/2022:
   + Remove the get_Claass() function from objects
   + _Objects class with now be defined in tiled with type int for example 0 for walls , 1 for enemies   
