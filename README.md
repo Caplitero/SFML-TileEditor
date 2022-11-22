@@ -2,6 +2,13 @@
 
 This project is open source .
 
+### Major_PATCH 22/19/2022:
+  + The json parser has been created, there will be more features added to it, but for now    
+  it can be used to load the map. All you have to do is Create a Custom Class in Tiled,   
+  export the "propertytypes.json" to the folder where you have your map. And add the class   
+  to the objects in Tiled
+  
+
 ### Update 21/11/2022:
   + A json parser has been added and will be used to load custom classes from Tiled
 
@@ -19,8 +26,7 @@ This project is open source .
   ! Note that we use a class that stores all the Object vectors and we must set it as static    
   because of warning erros   
   ! To actually access the Class, you must create an object right after it (GIVEMEDATA)   
-  ![Example](HowToCreateNewObject.png) 
-
+ 
 
 ### Update 17/11/2022 :
   + You can now create your own Classes and customize how the    
