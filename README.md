@@ -7,7 +7,8 @@ This project is open source .
   it can be used to load the map. All you have to do is Create a Custom Class in Tiled   
   (You will have to add a propriety  "Class_ID" of type int and a value ),   
   export the "propertytypes.json" to the folder where you have your map. And add the class   
-  to the objects in Tiled
+  to the objects in Tiled   
+  <img src="https://github.com/Caplitero/SFML-TileEditor/blob/main/How%20to%20load%20a%20Class.png" width="400" />
   
 
 ### Update 21/11/2022:
