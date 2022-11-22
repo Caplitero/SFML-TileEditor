@@ -2,6 +2,7 @@
 
 #include "XMLParse.h"
 #include <SFML/Graphics.hpp>
+#include "jsonParser.h"
 
 namespace CAP {
 
@@ -72,7 +73,7 @@ namespace CAP {
 	class TileMapFile
 	{
 		XMLDocument* Map = nullptr;
-
+		JCAP::JParser* PropertyTypes = nullptr;
 
 	public:
 		TileMapFile()
@@ -87,60 +88,97 @@ namespace CAP {
 		std::vector<_Node> Imagelayers;
 		int width;
 		int height;
+		
+		std::string get_CLASS_ID(CAP::_Node * node) {
+			
+			std::string CLASS = node->find_keyValue("class");
+			if (!CLASS.empty()) {
+				for (int i = 0; i < PropertyTypes->Class_IDs.size(); i++)
+					if (PropertyTypes->Class_IDs[i] == CLASS)
+						return std::to_string(i);
+			}
+			return "\0";
 
+		}
 
 		bool load(std::string FOLDER, std::string FILE)
 		{
-			int result = Map->load((FOLDER + FILE).c_str());
-			if (result == Successful) {
+			PropertyTypes = new JCAP::JParser;
+			if (PropertyTypes->read("propertytypes.json"))
+			{
+				int result = Map->load((FOLDER + FILE).c_str());
+				if (result == Successful) {
 
-				for (_Node* child : Map->Root->Children[0]->Children)
-				{
-					if (child->tag == "tileset") {
-						XMLDocument newdoc; std::string newfile = child->find_keyValue("source");
-						int ok = newdoc.load((FOLDER + newfile).c_str());
-						if (ok == FileNotFound)
-						{
-							std::cout << FOLDER + newfile << " : Could not be found "; return 0;
+					for (_Node* child : Map->Root->Children[0]->Children)
+					{
+						if (child->tag == "tileset") {
+							XMLDocument newdoc; std::string newfile = child->find_keyValue("source");
+							int ok = newdoc.load((FOLDER + newfile).c_str());
+							if (ok == FileNotFound)
+							{
+								std::cout << FOLDER + newfile << " : Could not be found "; return 0;
+							}
+
+							else if (ok == Successful)
+							{
+
+								std::cout << "Tileset " << newfile << " : has loaded succesfully \n"; TileSets.push_back(_TileSet(newdoc.Root->Children[0])); // Load the tilesets 
+
+							}
+
+
 						}
 
-						else if (ok == Successful)
+						if (child->tag == "objectgroup")    // Save all object layers
 						{
 
-							std::cout << "Tileset " << newfile << " : has loaded succesfully \n"; TileSets.push_back(_TileSet(newdoc.Root->Children[0])); // Load the tilesets 
+							for (auto ITEM : child->Children)
+							{
+								if (ITEM->tag != "properties")
+								{
+									std::string ID = get_CLASS_ID(ITEM);
+									if (!ID.empty())
+										ITEM->replace_keyValue("class", ID.c_str());
+									else
+									{
+										std::cerr << "Error : Class '" << ITEM->find_keyValue("class") << "' is undefined";
+										return 0;
+									}
+								}
 
+								
+							}
+
+							ObjectLayers.push_back(*child);
+							
+							     
+						}
+
+						if (child->tag == "imagelayer")    // Save all image layers
+							Imagelayers.push_back(*child);
+						if (child->tag == "layer")
+						{
+							TileLayers.push_back(_TileLayer(*child));
 						}
 
 
 					}
+					std::cout << "Tilemap " << FILE << " :  has loaded succesfully \n";
 
-					if (child->tag == "objectgroup")    // Save all object layers
-					{
-						ObjectLayers.push_back(*child);
-					}
-
-					if (child->tag == "imagelayer")    // Save all image layers
-						Imagelayers.push_back(*child);
-					if (child->tag == "layer")
-					{
-						TileLayers.push_back(_TileLayer(*child));
-					}
-
-
+					width = stoi(Map->Root->Children[0]->find_keyValue("tilewidth"));
+					height = stoi(Map->Root->Children[0]->find_keyValue("tileheight"));
 				}
-				std::cout << "Tilemap " << FILE << " :  has loaded succesfully \n";
+				else if (result == FileNotFound) {
+					std::cout << FOLDER + FILE << " : Could not be found "; return 0;
+				}
 
-				width = stoi(Map->Root->Children[0]->find_keyValue("tilewidth"));
-				height = stoi(Map->Root->Children[0]->find_keyValue("tileheight"));
 			}
-			else if (result == FileNotFound) {
-				std::cout << FOLDER + FILE << " : Could not be found "; return 0;
+			else {
+				return 0;
+				delete(PropertyTypes);
 			}
-
-			delete(Map); // The Document is of not use from now on 
-
-
-
+			delete(Map);           // The Document is of not use from now on 
+			delete(PropertyTypes); 
 			return 1;
 
 		}
@@ -164,6 +202,7 @@ namespace CAP {
 		}
 
 		
+
 		bool load()
 		{
 			

@@ -116,7 +116,7 @@ private:
 	{
 		Map = new CAP::SFMLMap("", "untitled.tmx");
 		Environment_Init Env;
-	
+		sf::Clock clock;
 		if (Map->load())
 		{
 			if(Map->doc.ObjectLayers.size())
@@ -134,8 +134,7 @@ private:
 				}
 			}
 		}
-		std::cout<<Env_data.ENEMIES[0].y;
-		
+		std::cout <<"Loading time : "<< clock.getElapsedTime().asMicroseconds()/1e+6f<<"s";
 		setFramerateLimit(60);    
 		setVerticalSyncEnabled(0);
 		delete(Map);

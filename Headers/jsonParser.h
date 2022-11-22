@@ -27,6 +27,15 @@ namespace JCAP {
 		std::vector<Keys> Keys;
 		std::vector<ListClass> List;
 		std::vector<_Member> Members;
+		std::string  Type;
+		std::string find_keyValue(std::string KEY)
+		{
+			for (auto& Data : Keys)
+				if (Data.key == KEY)
+					return Data.value;
+			return "\0";
+		}
+
 	};
 
 
@@ -59,6 +68,10 @@ namespace JCAP {
 							position++;
 							while (Buffer[position] != '"')
 								newKeys.value.push_back(Buffer[position++]);
+							if (newKeys.key == "type")
+							{
+								newM.Type = newKeys.value;
+							}
 							newM.Keys.push_back(newKeys);
 							position++;
 							
@@ -109,16 +122,18 @@ namespace JCAP {
 	public:
 		
 		_Member Root;
+		std::vector<std::string> Class_IDs;
 
 		bool read(std::string Json_File)
 		{
+			Class_IDs.resize(64);
 			std::ifstream file(Json_File);
 			if (file.is_open()) {
 				 Buffer = std::string((std::istreambuf_iterator<char>(file)), // The buffer is used to store all data from the file
 					std::istreambuf_iterator<char>());
 				
 				
-				std::string  Search;                    // Saves text as going through the document
+				std::string  Search;       // Saves text as going through the document
 				lenght = Buffer.size();    // Lenght of the XML doc
 				
 				
@@ -130,9 +145,28 @@ namespace JCAP {
 					
 				   position++;
 				}
+
+				for (auto &ITEM : Root.Members)
+				{
+					if (ITEM.Type == "class")
+					{
+						for (auto& PROPERTIES : ITEM.Members)
+						{
+							if (PROPERTIES.find_keyValue("name") == "Class_ID")
+							{
+								Class_IDs[atoi(PROPERTIES.find_keyValue("value").c_str())]
+									= ITEM.find_keyValue("name");
+							}
+
+						}
+					}
+				}
+
 				return 1;
 			}
-			else return 0;
+			else { 
+				std::cerr << "Failed to load" << Json_File << '\n';
+				return 0; }
 		}
 
 	};

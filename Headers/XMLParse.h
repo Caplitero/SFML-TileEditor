@@ -36,6 +36,12 @@ namespace CAP {
 		std::vector<XMLAttribute> AttributesList; // This vector contains all the attributes from the node
 		std::vector<_Node*>       Children;      // This vector contains pointers to all lower nodes
 
+		bool replace_keyValue(const char* Key, const char* newValue)
+		{
+			for (XMLAttribute& attr : AttributesList)
+				if (attr.key == Key) { attr.value = newValue; return 1; }
+			return 0;
+		}
 
 		std::string find_keyValue(const char* Key)
 		{

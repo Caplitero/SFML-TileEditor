@@ -78,8 +78,9 @@ static class Environment_Init
 {
 	std::vector < _Object* > DataSheet =
 	{
-	dynamic_cast<_Object*>(new Walls()),
-	dynamic_cast<_Object*>(new Enemy()) };
+	dynamic_cast<_Object*>(new Walls()),  // Class = "0"
+	dynamic_cast<_Object*>(new Enemy())   // Class = "1"
+	};
 
 public:
 
