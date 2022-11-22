@@ -4,7 +4,8 @@ This project is open source .
 
 ### Major_PATCH 22/19/2022:
   + The json parser has been created, there will be more features added to it, but for now    
-  it can be used to load the map. All you have to do is Create a Custom Class in Tiled,   
+  it can be used to load the map. All you have to do is Create a Custom Class in Tiled   
+  (You will have to add a propriety  "Class_ID" of type int and a value ),   
   export the "propertytypes.json" to the folder where you have your map. And add the class   
   to the objects in Tiled
   
