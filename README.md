@@ -2,7 +2,13 @@
 
 This project is open source .
 
-### Major_PATCH 22/19/2022:
+### Major_PATCH 24/11/2022:
+  + Now every Object can we stored in headers. If you go in [headers->objects](https://github.com/Caplitero/SFML-TileEditor/tree/main/Headers/objects)   
+  you can see how an Object must be wrote( the onCreate function is not optional)   
+    In [H_Objects_h](https://github.com/Caplitero/SFML-TileEditor/blob/main/Headers/H_Objects_.h) you will have all the info on how to add new classes.
+  
+
+### Major_PATCH 22/11/2022:
   + The json parser has been created, there will be more features added to it, but for now    
   it can be used to load the map. All you have to do is Create a Custom Class in Tiled   
   (You will have to add a propriety  "Class_ID" of type int and a value ),   
