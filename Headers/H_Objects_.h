@@ -5,116 +5,42 @@
 #include <functional>
 
 
+////Predefined classes/////
+class _Object;
+class Enemy;
+class Wall;
 
-class _Object
+ class Environment
 {
-
-public:
-	virtual void Init(CAP::_Node* Data)
-	{
-		std::cout << "empty Init";
-	}
-
-	std::function<void(CAP::_Node* Data)> get_Init()
-	{
-		return [&](CAP::_Node* Data) {Init(Data); };
-	};
-
-	_Object() {}
-
-};
-
-
-class Walls :public _Object
-{
-	virtual void Init(CAP::_Node* Data)
-	{
-		std::cout << "";
-
-	}
+	 static std::vector<std::function<void(Environment* Data,
+		 CAP::_Node* new_Object)>> DataSheet;
 public:
 
-	int x;
-	int y;
+	/////Write your vectors here/////
+	
+       std::vector<Wall*> AllWalls;
+	/*<----------------------------->*/
 
-
-	Walls()
+	void addNewData(CAP::_Node *new_Object)
 	{
-		x = y = 0;
-	}
-	Walls(int _x, int _y)
-	{
-		x = _x; y = _y;
-	}
-
-
-};
-
-
-class Enemy :public _Object
-{
-
-	virtual void Init(CAP::_Node* Data);
-
-public:
-
-	float x;
-	float y;
-
-	Enemy()
-	{
-		x = y = 0;
-	}
-	Enemy(float _x, float _y)
-	{
-		x = _x; y = _y;
-	}
-
-
-};
-
-
-static class Environment_Init
-{
-	std::vector < _Object* > DataSheet =
-	{
-	dynamic_cast<_Object*>(new Walls()),  // Class = "0"
-	dynamic_cast<_Object*>(new Enemy())   // Class = "1"
-	};
-
-public:
-
-	std::vector<Enemy> ENEMIES;
-
-	Environment_Init() { }
-
-	void add_newItem(CAP::_Node* Child)
-	{
-		std::string CLASS = Child->find_keyValue("class");
-
+		std::string CLASS = new_Object->find_keyValue("class");
 		if (atoi(CLASS.c_str()) < DataSheet.size() && !CLASS.empty())
 		{
-			_Object* Item = DataSheet[atoi(CLASS.c_str())];
-			auto lambda = Item->get_Init();
-			lambda(Child);
-
+			DataSheet[atoi(CLASS.c_str())](this, new_Object);
 		}
 	}
 
-	~Environment_Init()
-	{
-		for (auto Item : DataSheet)
-			delete(Item);
-	}
-}Env_data;
+};
 
+ /////Include all your OBJECTS/////
+#include "objects/Wall.h"
 
+ //////////////////////////////////
 
-inline void Enemy::Init(CAP::_Node* Data)
-{
-	float nx = atof(Data->find_keyValue("x").c_str());
-	float ny = atof(Data->find_keyValue("y").c_str());
-	Enemy NewN(nx, ny);
-	Env_data.ENEMIES.push_back(NewN);
-
-}
+ std::vector<std::function< void(Environment * Data, 
+	 CAP::_Node * new_Object)>> Environment::DataSheet = {
+	 ///Add your class Constructors here///
+		Wall::onCreate
+	 
+	 //////////////////////////////////////
+ };

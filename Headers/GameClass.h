@@ -115,7 +115,8 @@ private:
 	virtual void onCreate()override
 	{
 		Map = new CAP::SFMLMap("", "untitled.tmx");
-		Environment_Init Env;
+		Environment env;
+		
 		sf::Clock clock;
 		if (Map->load())
 		{
@@ -127,13 +128,14 @@ private:
 				  
 				  for (auto& attr : Layer.Children)
 				  {
-						 Env.add_newItem(attr);
+					  env.addNewData(attr);
 				  }
 				  // the attr will also contain coordonates 
 				  // and the other data about the object
 				}
 			}
 		}
+		
 		std::cout <<"Loading time : "<< clock.getElapsedTime().asMicroseconds()/1e+6f<<"s";
 		setFramerateLimit(60);    
 		setVerticalSyncEnabled(0);
