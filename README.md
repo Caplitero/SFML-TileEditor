@@ -5,7 +5,7 @@ This project is open source .
 ### Major_PATCH 3/12/2022:
   + Remade the structure of the repository
   + Added cmake for easier debug
-  + Add the maps in "Resources"
+  + Add the maps in "source"
 
 ### Major_PATCH 24/11/2022:
   + Now every Object can we stored in headers. If you go in [headers->objects](https://github.com/Caplitero/SFML-TileEditor/tree/main/Headers/objects)   
