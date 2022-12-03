@@ -1,0 +1,9 @@
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/Experimental.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/Nightly.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/Continuous.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/main.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/PACKAGE.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Caplitero/Desktop/SFML-TileEditor/build/CMakeFiles/ZERO_CHECK.dir
