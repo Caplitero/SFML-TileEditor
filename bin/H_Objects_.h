@@ -1,4 +1,4 @@
-#pragma once
+
 #include "TileMapLoader.h"
 #include <iostream>
 #include <vector>

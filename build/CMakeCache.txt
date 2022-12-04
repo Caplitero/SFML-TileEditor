@@ -208,7 +208,7 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Path to the coverage program that CTest uses for performing coverage
 // inspection
-COVERAGE_COMMAND:FILEPATH=COVERAGE_COMMAND-NOTFOUND
+COVERAGE_COMMAND:FILEPATH=C:/MinGW/bin/gcov.exe
 
 //Extra command line flags to pass to the coverage tool
 COVERAGE_EXTRA_FLAGS:STRING=-l

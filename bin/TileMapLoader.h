@@ -4,7 +4,7 @@
 #include <string> 
 #include <vector>
 #include <fstream>
-
+#include <chrono>
 
 
 
@@ -22,6 +22,16 @@ namespace CAP {
 		FileNotFound
 
 	};
+   
+    // Basic Clock to get elapsed time
+    class Clock
+	{std::chrono::system_clock::time_point _STARTING_POINT;
+    public:
+	Clock(){_STARTING_POINT= std::chrono::system_clock::now();}
+		 // Return the elapsed time in milliseconds 
+		 inline int elapsedTime(){  
+			return std::chrono::duration_cast<std::chrono::milliseconds>
+			      (std::chrono::system_clock::now() -_STARTING_POINT).count();}};
 
 	class _Node {
 
@@ -398,7 +408,7 @@ namespace CAP {
 				return 1;
 			}
 			else { 
-				std::cerr << "Failed to load" << Json_File << '\n';
+				std::cerr << "Failed to load " << Json_File << '\n';
 				return 0; }
 		}
 
@@ -503,7 +513,8 @@ namespace CAP {
 		bool load(std::string FOLDER, std::string FILE)
 		{
 			PropertyTypes = new JParser;
-			if (PropertyTypes->read("propertytypes.json"))
+			std::cerr<<"Loading "+FILE<<" ... \n";
+			if (PropertyTypes->read(FOLDER+"propertytypes.json"))
 			{
 				int result = Map->load((FOLDER + FILE).c_str());
 				if (result == Successful) {

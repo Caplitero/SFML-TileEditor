@@ -1,0 +1,25 @@
+[
+    {
+        "color": "#ffa0a0a4",
+        "id": 1,
+        "members": [
+            {
+                "name": "Class_ID",
+                "type": "string",
+                "value": "0"
+            }
+        ],
+        "name": "Class0",
+        "type": "class",
+        "useAs": [
+            "property",
+            "map",
+            "layer",
+            "object",
+            "tile",
+            "tileset",
+            "wangcolor",
+            "wangset"
+        ]
+    }
+]

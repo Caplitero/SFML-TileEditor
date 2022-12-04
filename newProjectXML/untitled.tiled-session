@@ -1,0 +1,47 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/Map_Example.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/Map_Example.tmx": {
+            "scale": 0.54921875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.6827880512091,
+                "y": 320.4551920341394
+            }
+        },
+        "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/Map_Example1.tmx": {
+            "scale": 0.54921875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.6827880512091,
+                "y": 320.4551920341394
+            }
+        },
+        "untitled.tmx": {
+            "scale": 0.54921875,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 480.6827880512091,
+                "y": 320.4551920341394
+            }
+        }
+    },
+    "last.objectTypesPath": "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/propertytypes.json",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "untitled.tmx",
+        "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/Map_Example.tmx"
+    ],
+    "project": "untitled.tiled-project",
+    "recentFiles": [
+        "untitled.tmx",
+        "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/Map_Example.tmx",
+        "C:/Users/Caplitero/Desktop/SFML-TileEditor/Resources/Map_Example1.tmx"
+    ]
+}
