@@ -31,7 +31,12 @@ public:
 			DataSheet[atoi(CLASS.c_str())](this, new_Object);
 		}
 	}
-
+    
+	virtual ~Environment()
+	{
+	   for(auto item : AllWalls)
+	   delete item;
+	}
 };
 
 /////Include all your OBJECTS/////
