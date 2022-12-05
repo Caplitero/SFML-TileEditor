@@ -10,6 +10,8 @@ class _Object;
 class Enemy;
 class Wall;
 
+
+
  class Environment
 {
 	 static std::vector<std::function<void(Environment* Data,
@@ -32,7 +34,7 @@ public:
 
 };
 
- /////Include all your OBJECTS/////
+/////Include all your OBJECTS/////
 #include "objects/Wall.h"
 #include "objects/_Object.h"
  //////////////////////////////////

@@ -6,8 +6,6 @@
 #include <fstream>
 #include <chrono>
 
-
-
 namespace CAP {
     
     enum {
@@ -32,43 +30,40 @@ namespace CAP {
 		 inline int elapsedTime(){  
 			return std::chrono::duration_cast<std::chrono::milliseconds>
 			      (std::chrono::system_clock::now() -_STARTING_POINT).count();}};
-
-	class _Node {
-
-		struct XMLAttribute
+    
+	// Used to save a key and it's value <key="value"> 
+	struct _KEY_STRUCT
 		{
-			std::string key;    // Name of the Attribute
-			std::string value; // Value of the key
+		std::string key   ="\0";   // Name of the Attribute
+		std::string value ="\0";   // Value of the key
 		};
 
-	public:
-
-		std::string               tag;               // Tag of the Node
-		std::string               inner_Text;       // Inner text of the node
-		class _Node* parent;          // Point to the upper node
-		std::vector<XMLAttribute> AttributesList; // This vector contains all the attributes from the node
+	struct  _Node {
+		std::string               tag;           // Tag of the Node
+		std::string               inner_Text;    // Inner text of the node
+		class _Node*              parent;        // Point to the upper node
+		std::vector<_KEY_STRUCT>  AttributesList;// This vector contains all the attributes from the node
 		std::vector<_Node*>       Children;      // This vector contains pointers to all lower nodes
 
 		bool replace_keyValue(const char* Key, const char* newValue)
 		{
-			for (XMLAttribute& attr : AttributesList)
+			for (_KEY_STRUCT& attr : AttributesList)
 				if (attr.key == Key) { attr.value = newValue; return 1; }
 			return 0;
 		}
-
+        
+		// Return the Value of <key>
 		std::string find_keyValue(const char* Key)
 		{
-
-			for (XMLAttribute& attr : AttributesList)
+			for (_KEY_STRUCT& attr : AttributesList)
 				if (attr.key == Key) { return attr.value; break; }
-
 			return "\0";
 		}
 
-
-		int find_attrs(std::string Buffer, unsigned& position)  // Goes through the node and get Attributes
+        // Goes through the node and gets all Attributes
+		int find_attrs(std::string Buffer, unsigned& position)  
 		{
-			XMLAttribute New_Attribute; // Load the new Attribute
+			_KEY_STRUCT New_Attribute; // Load the new Attribute
 			std::string  Search;       // Attribute data parser
 			position++;
 
@@ -78,12 +73,8 @@ namespace CAP {
 					Search.push_back(Buffer[position]); // Read data
 				position++;                        // Go to next character
 
-				
-
-
 				 if (Buffer[position] == ' '  && tag.empty())
-				{
-					
+				{					
 					tag = Search;   // Add node tag
 					position++;          // The data ends on the next position
 					Search.clear();     // Clear vector for the next data input
@@ -146,8 +137,6 @@ namespace CAP {
 		std::string version;   // Version of the XML File
 		std::string encoding; // Type of Encoding
 		_Node* Root;    // This is the xml root (<?xml?>)
-
-
 
 		LoadValue load(const char* path) {
 
@@ -251,7 +240,6 @@ namespace CAP {
 			return Successful; // If the file has loaded correctly
 		}
 
-
 	};
 
     struct ListClass {
@@ -259,28 +247,21 @@ namespace CAP {
 		std::vector<std::string> Data;
 	};
 
-	struct Keys {
-		std::string key="\0";
-		std::string value="\0";
-	};
-
-
 	struct _Member
 	{
-		std::vector<Keys> Keys;
+		std::vector<_KEY_STRUCT> Keys;
 		std::vector<ListClass> List;
 		std::vector<_Member> Members;
 		std::string  Type;
 		std::string find_keyValue(std::string KEY)
 		{
-			for (auto& Data : Keys)
+			for (_KEY_STRUCT& Data : Keys)
 				if (Data.key == KEY)
 					return Data.value;
 			return "\0";
 		}
 
 	};
-
 
 	class JParser {
 
@@ -297,24 +278,19 @@ namespace CAP {
 				{
 					position++;
 					
-					Keys newKeys;
+					_KEY_STRUCT newKeys;
 					while (Buffer[position] != '"')
-					{
-						
 						newKeys.key.push_back(Buffer[position++]);
-						
-					}
 					
-						position += 3;
-						if (Buffer[position] == '"')
-						{
-							position++;
-							while (Buffer[position] != '"')
-								newKeys.value.push_back(Buffer[position++]);
-							if (newKeys.key == "type")
-							{
-								newM.Type = newKeys.value;
-							}
+					position += 3;
+					if (Buffer[position] == '"')
+					{
+						position++;
+						while (Buffer[position] != '"')
+						    newKeys.value.push_back(Buffer[position++]);
+						if (newKeys.key == "type")
+							newM.Type = newKeys.value;
+							
 							newM.Keys.push_back(newKeys);
 							position++;
 							
@@ -323,42 +299,28 @@ namespace CAP {
 						else if (Buffer[position] == '[')
 						{
 							
-							
 							while (Buffer[position] != ']')
-							{
-								
-								
+							{		
 								if (Buffer[position] == '{')
-								{
 									newM.Members.push_back(_getAttr());
-								}
 								else position++;
-								
 							}
-							
 							continue;
 						}
 						else if (Buffer[position] != ' ')
 						{
 						
-							while (Buffer[position] != ' ' &&  Buffer[position] != ',')
-							{
-								
+							while (Buffer[position] != ' ' &&  Buffer[position] != ',')								
 								newKeys.value.push_back(Buffer[position++]);
-								
-							}
 							
 							newM.Keys.push_back(newKeys);
 							continue;
 						}
-						
 				}
 				position++;
 			}
 			return newM;
 		 }
-
-		
 
 
 
@@ -390,21 +352,13 @@ namespace CAP {
 				}
 
 				for (auto &ITEM : Root.Members)
-				{
 					if (ITEM.Type == "class")
-					{
 						for (auto& PROPERTIES : ITEM.Members)
-						{
 							if (PROPERTIES.find_keyValue("name") == "Class_ID")
 							{
 								Class_IDs[atoi(PROPERTIES.find_keyValue("value").c_str())]
 									= ITEM.find_keyValue("name");
 							}
-
-						}
-					}
-				}
-
 				return 1;
 			}
 			else { 
@@ -424,80 +378,99 @@ namespace CAP {
 
 		_TileSet(_Node* doc)
 		{
-
 			for (_Node* node : doc->Children)
-			{
-
 				if (node->tag == "image")
 				{
-
-
 					image = node->find_keyValue("source");
-
-
 					break;
 				}
-			}
-
-
 		}
-
-
-
 	};
 
-	struct _TileLayer {
+	class _TileLayer {
+    
+    std::vector<std::vector<int>> read_InnerText(std::string Text, unsigned _Width, unsigned _Height)
+	{   
+		
+		std::vector<std::vector<int>> Data(_Height,std::vector<int>(_Width));
 
-		int rows;
-		int columns;
-		int id;
-		std::vector<int> lay;
-
-		_TileLayer(_Node node)
-		{
-			columns = stoi(node.find_keyValue("width"));
-			rows = stoi(node.find_keyValue("height"));
-			id = stoi(node.find_keyValue("id"));
-
-			std::string layer = node.Children[0]->inner_Text;
-
-			int i = 0; std::string number;
-			while (layer[i] != '\0')
+		int position = 0;int I=0;int J=0;  std::string number;
+			while (Text[position] != '\0')
 			{
-				if (layer[i] == ',' || layer[i + 1] == '\0')
+				if (Text[position] == ',' || Text[position + 1] == '\0')
 				{
-					lay.push_back(stoi(number));
+				    Data[I][J++]=(stoi(number));
 					number.clear();
+					I+=J/_Width;
+					J=J%_Width;
 				}
-				else {
-					number = number + layer[i];
-				}
-
-				i++;
+				else number = number + Text[position];
+				position++;
 			}
+		return Data;
+	}
 
+	struct Layer_Data{
+		std::vector<std::vector<int>> Tile_IDS;
+		int columns =0;
+		int rows =0;
+		int x=0;
+		int y=0;
+	};
+    public:
+		int id=0;
+		std::string Name;
+		std::vector<Layer_Data> Chunks;
+
+		_TileLayer(_Node node,bool Type)
+		{
+			id = stoi(node.find_keyValue("id"));
+            Name = node.find_keyValue("name");
+            if( Type )
+			{
+             for(auto& Chunk: node.Children[0]->Children)
+			 {  
+				Layer_Data newChunk;
+				newChunk.x = stoi(Chunk->find_keyValue("x"));
+				newChunk.y = stoi(Chunk->find_keyValue("y"));
+				newChunk.columns  = stoi(Chunk->find_keyValue("width"));
+			    newChunk.rows     = stoi(Chunk->find_keyValue("height"));
+				newChunk.Tile_IDS = read_InnerText(Chunk->inner_Text,
+				                                   newChunk.columns,newChunk.rows);
+				Chunks.push_back(newChunk);
+			 }
+			}
+			else 
+			{
+            Chunks.resize(1);
+			Chunks[0].columns  = stoi(node.find_keyValue("width"));
+			Chunks[0].rows     = stoi(node.find_keyValue("height"));
+			Chunks[0].Tile_IDS =read_InnerText(node.Children[0]->inner_Text,
+			                                   Chunks[0].columns,Chunks[0].rows);
+			}
 		}
 	};
+
 
 	class TileMapFile
 	{
 		XMLDocument* Map = nullptr;
 		JParser* PropertyTypes = nullptr;
-
-	public:
-		TileMapFile()
+        
+        LoadValue NewTileSet(std::string folder,_Node* child)
 		{
-			Map = new XMLDocument;
+            XMLDocument newdoc; std::string newfile = child->find_keyValue("source");
+			LoadValue Result = newdoc.load((folder + newfile).c_str());
+			if (Result == FileNotFound)
+			{std::cerr << folder + newfile << " : Could not be found "; return Fail;}
+	
+			else if (Result == Successful)
+			{std::cout << "Tileset " << newfile << " : has loaded succesfully \n"; 
+		    Data.TileSets.push_back(_TileSet(newdoc.Root->Children[0])); // Load the tilesets 
+			return Successful;}
 
+			return Fail;
 		}
-
-		std::vector<_TileSet> TileSets;
-		std::vector<_TileLayer > TileLayers;
-		std::vector<_Node> ObjectLayers;
-		std::vector<_Node> Imagelayers;
-		int width;
-		int height;
-		
 		std::string get_CLASS_ID(CAP::_Node * node) {
 			
 			std::string CLASS = node->find_keyValue("class");
@@ -507,37 +480,46 @@ namespace CAP {
 						return std::to_string(i);
 			}
 			return "\0";
-
 		}
 
-		bool load(std::string FOLDER, std::string FILE)
-		{
-			PropertyTypes = new JParser;
-			std::cerr<<"Loading "+FILE<<" ... \n";
-			if (PropertyTypes->read(FOLDER+"propertytypes.json"))
-			{
-				int result = Map->load((FOLDER + FILE).c_str());
-				if (result == Successful) {
+	public:
+		TileMapFile()
+		{Map = new XMLDocument;
+		PropertyTypes = new JParser;}
+        
+		//<-----------Map Data----------->//
+		struct _Map_Data{
+		std::vector<_TileSet>   TileSets;
+		std::vector<_TileLayer> TileLayers;
+		std::vector<_Node> ObjectLayers;
+		std::vector<_Node> Imagelayers;}Data;
+        //<-----------Map Data----------->//
 
+        //<-------Map properties------->//
+        struct _Map_Properties{
+		std::string Orientation= "\0";
+		int Tile_Width  = 0;
+		int Tile_Height = 0;
+		bool infinite   = 0;
+		int width  =0;
+		int height =0;
+		}Properties;
+		//<-------Map properties------->//
+
+		bool load(std::string FOLDER, std::string FILE)
+		{   
+			
+			std::cerr<<"Loading "+FILE<<" ... \n";
+			Clock appClock; // Used to get Loading time
+            
+			if (PropertyTypes->read(FOLDER+"propertytypes.json"))
+			{   LoadValue Result = Map->load((FOLDER + FILE).c_str()) ;
+				if (Result == Successful) {
+					Properties.infinite  = stoi(Map->Root->Children[0]->find_keyValue("infinite"));
 					for (_Node* child : Map->Root->Children[0]->Children)
 					{
-						if (child->tag == "tileset") {
-							XMLDocument newdoc; std::string newfile = child->find_keyValue("source");
-							int ok = newdoc.load((FOLDER + newfile).c_str());
-							if (ok == FileNotFound)
-							{
-								std::cout << FOLDER + newfile << " : Could not be found "; return 0;
-							}
-
-							else if (ok == Successful)
-							{
-
-								std::cout << "Tileset " << newfile << " : has loaded succesfully \n"; TileSets.push_back(_TileSet(newdoc.Root->Children[0])); // Load the tilesets 
-
-							}
-
-
-						}
+						if (child->tag == "tileset") 
+							{if(!NewTileSet(FOLDER , child))return FAIL;}
 
 						if (child->tag == "objectgroup")    // Save all object layers
 						{
@@ -552,44 +534,43 @@ namespace CAP {
 									else
 									{
 										std::cerr << "Error : Class '" << ITEM->find_keyValue("class") << "' is undefined";
-										return 0;
+										return Fail;
 									}
 								}
 
-								
 							}
 
-							ObjectLayers.push_back(*child);
-							
-							     
+							Data.ObjectLayers.push_back(*child);
+								     
 						}
 
 						if (child->tag == "imagelayer")    // Save all image layers
-							Imagelayers.push_back(*child);
+							Data.Imagelayers.push_back(*child);
 						if (child->tag == "layer")
-						{
-							TileLayers.push_back(_TileLayer(*child));
-						}
-
+							Data.TileLayers.push_back(_TileLayer(*child,Properties.infinite));
+							
 
 					}
+					
 					std::cout << "Tilemap " << FILE << " :  has loaded succesfully \n";
-
-					width = stoi(Map->Root->Children[0]->find_keyValue("tilewidth"));
-					height = stoi(Map->Root->Children[0]->find_keyValue("tileheight"));
+                    std::cout<<"Loading time : "<<appClock.elapsedTime()<<"ms\n";
+					Properties.width       = stoi(Map->Root->Children[0]->find_keyValue("width"));
+					Properties.height      = stoi(Map->Root->Children[0]->find_keyValue("height"));
+					Properties.Tile_Width  = stoi(Map->Root->Children[0]->find_keyValue("tilewidth"));
+					Properties.Tile_Height = stoi(Map->Root->Children[0]->find_keyValue("tileheight"));
+					Properties.Orientation = Map->Root->Children[0]->find_keyValue("orientation");
+					
 				}
-				else if (result == FileNotFound) {
-					std::cout << FOLDER + FILE << " : Could not be found "; return 0;
+				else if (Result == FileNotFound) {
+					std::cout << FOLDER + FILE << " : Could not be found "; return Fail;
 				}
-
 			}
 			else {
-				return 0;
-				delete(PropertyTypes);
+				delete(PropertyTypes); return Fail; 
 			}
 			delete(Map);           // The Document is of not use from now on 
 			delete(PropertyTypes); 
-			return 1;
+			return Successful;
 
 		}
 
