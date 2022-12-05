@@ -34,14 +34,13 @@ public:
     
 	virtual ~Environment()
 	{
-	   for(auto item : AllWalls)
-	   delete item;
+	   
 	}
 };
 
 /////Include all your OBJECTS/////
-#include "objects/Wall.h"
-#include "objects/_Object.h"
+#include "Resources/objects/Wall.h"
+#include "Resources/objects/_Object.h"
  //////////////////////////////////
 
  std::vector<std::function< void(Environment * Data, 

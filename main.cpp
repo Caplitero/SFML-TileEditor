@@ -1,18 +1,18 @@
 #include <iostream>
-#include "H_Objects_.h"
+#include "bin\H_Objects_.h"
 
 class App
 {
     Environment Env;
     CAP::TileMapFile Current_Map;
-    
+    std::string Resources_Path = "bin\\Resources\\";
     
    public:
    App(){}
 
    void Load_Map()
     {
-       if(Current_Map.load("Resources\\","Map_example.tmx")==CAP::Successful)
+       if(Current_Map.load(Resources_Path,"Map_example.tmx")==CAP::Successful)
        {
              for(auto & object : Current_Map.Data.ObjectLayers)
               for(auto item : object.Children)
@@ -20,6 +20,7 @@ class App
        }
        if(Env.AllWalls.size())
         std::cout<<Env.AllWalls[0]->_x;
+        
     }
 
    
