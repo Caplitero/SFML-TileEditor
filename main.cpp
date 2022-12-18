@@ -1,5 +1,7 @@
+
+
 #include <iostream>
-#include "bin\H_Objects_.h"
+#include "bin\Environment.h"
 
 class App
 {
@@ -10,28 +12,34 @@ class App
    public:
    App(){}
 
-   void Load_Map()
-    {
+   bool Load_Map()
+    {  
+        
        if(Current_Map.load(Resources_Path,"Map_example.tmx")==CAP::Successful)
        {
              for(auto & object : Current_Map.Data.ObjectLayers)
               for(auto item : object.Children)
-               if(item->tag == "object") Env.addNewData(item);
+               if(item->tag == "object"){
+                Env.add_OBJ(item);}
+
+            Env.update();
        }
-       if(Env.AllWalls.size())
-        std::cout<<Env.AllWalls[0]->_x;
-        
+       
     }
 
+   ~App()
+   {
+    std::for_each (Class_Constr.begin(), Class_Constr.end(), [](auto item) -> void
+     {delete item.second;});
+    Class_Constr.clear();
+     }
    
 };
-
 
 int main(int, char**) {
 
    App myapp;
    myapp.Load_Map();
-    
     
 }
  

@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
+#include <map>
 
 namespace CAP {
     
@@ -31,39 +32,28 @@ namespace CAP {
 			return std::chrono::duration_cast<std::chrono::milliseconds>
 			      (std::chrono::system_clock::now() -_STARTING_POINT).count();}};
     
-	// Used to save a key and it's value <key="value"> 
-	struct _KEY_STRUCT
-		{
-		std::string key   ="\0";   // Name of the Attribute
-		std::string value ="\0";   // Value of the key
-		};
-
+    // Struct used for easier manipulation of Data
+     struct _Variable
+	{
+	     _Variable(std::string value)
+		{_value = value;}
+		_Variable(){_value="\0";}
+		int toInt() {return atoi(_value.c_str());}
+		float toDouble(){ return atof(_value.c_str()); } 
+		std::string toString(){ return _value;}
+	protected:
+		std::string _value;
+	};
 	struct  _Node {
+		std::map<std::string,_Variable> AttributesList; // This map contains all the keys and values of the node
 		std::string               tag;           // Tag of the Node
 		std::string               inner_Text;    // Inner text of the node
 		class _Node*              parent;        // Point to the upper node
-		std::vector<_KEY_STRUCT>  AttributesList;// This vector contains all the attributes from the node
-		std::vector<_Node*>       Children;      // This vector contains pointers to all lower nodes
-
-		bool replace_keyValue(const char* Key, const char* newValue)
-		{
-			for (_KEY_STRUCT& attr : AttributesList)
-				if (attr.key == Key) { attr.value = newValue; return 1; }
-			return 0;
-		}
-        
-		// Return the Value of <key>
-		std::string find_keyValue(const char* Key)
-		{
-			for (_KEY_STRUCT& attr : AttributesList)
-				if (attr.key == Key) { return attr.value; break; }
-			return "\0";
-		}
+		std::vector<_Node*>       Children;      // This vector contains pointers to all lower nodes		
 
         // Goes through the node and gets all Attributes
 		int find_attrs(std::string Buffer, unsigned& position)  
 		{
-			_KEY_STRUCT New_Attribute; // Load the new Attribute
 			std::string  Search;       // Attribute data parser
 			position++;
 
@@ -90,7 +80,7 @@ namespace CAP {
 
 				if (Buffer[position] == '=')
 				{
-					New_Attribute.key = Search;  // = marks the end of a key
+					std::string key = Search;  // = marks the end of a key
 
 					Search.clear();   // Clear vector for the next data input
 					position += 2;     // The value starts on the next position
@@ -99,14 +89,10 @@ namespace CAP {
 						while (Buffer[position] != '"')
 							Search.push_back(Buffer[position++]); // Read the value 
 					else return false;  // False because the file is incomplete
-
-					New_Attribute.value = Search; // Set new value
+                         
+					this->AttributesList[key]=_Variable(Search); // Add the new Attribute to the node's list
 					Search.clear();              // Clear vector for the next data input
-
-					this->AttributesList.push_back(New_Attribute); // Add the new Attribute to the node's list
-
-					New_Attribute.key.clear();       // Clear the key for next attribute
-					New_Attribute.value.clear();    // Clear the value for next atttribute
+                         
 					continue;
 				}
 
@@ -241,6 +227,13 @@ namespace CAP {
 		}
 
 	};
+
+    // Used to save a key and it's value <key="value"> 
+    struct _KEY_STRUCT
+		{
+		std::string key   ="\0";   // Name of the Attribute
+		std::string value ="\0";   // Value of the key
+		};
 
     struct ListClass {
 		std::string Tag;
@@ -381,7 +374,7 @@ namespace CAP {
 			for (_Node* node : doc->Children)
 				if (node->tag == "image")
 				{
-					image = node->find_keyValue("source");
+					image = node->AttributesList["source"].toString();
 					break;
 				}
 		}
@@ -424,17 +417,17 @@ namespace CAP {
 
 		_TileLayer(_Node node,bool Type)
 		{
-			id = stoi(node.find_keyValue("id"));
-            Name = node.find_keyValue("name");
+		  id   = node.AttributesList["id"].toInt();
+            Name = node.AttributesList["name"].toString();
             if( Type )
 			{
              for(auto& Chunk: node.Children[0]->Children)
 			 {  
 				Layer_Data newChunk;
-				newChunk.x = stoi(Chunk->find_keyValue("x"));
-				newChunk.y = stoi(Chunk->find_keyValue("y"));
-				newChunk.columns  = stoi(Chunk->find_keyValue("width"));
-			    newChunk.rows     = stoi(Chunk->find_keyValue("height"));
+				newChunk.x = Chunk->AttributesList["x"].toInt();
+				newChunk.y = Chunk->AttributesList["y"].toInt();
+				newChunk.columns  = Chunk->AttributesList["width"].toInt();
+			    newChunk.rows     = Chunk->AttributesList["height"].toInt();
 				newChunk.Tile_IDS = read_InnerText(Chunk->inner_Text,
 				                                   newChunk.columns,newChunk.rows);
 				Chunks.push_back(newChunk);
@@ -443,8 +436,8 @@ namespace CAP {
 			else 
 			{
             Chunks.resize(1);
-			Chunks[0].columns  = stoi(node.find_keyValue("width"));
-			Chunks[0].rows     = stoi(node.find_keyValue("height"));
+			Chunks[0].columns  = node.AttributesList["width"].toInt();
+			Chunks[0].rows     = node.AttributesList["height"].toInt();
 			Chunks[0].Tile_IDS =read_InnerText(node.Children[0]->inner_Text,
 			                                   Chunks[0].columns,Chunks[0].rows);
 			}
@@ -459,7 +452,7 @@ namespace CAP {
         
         LoadValue NewTileSet(std::string folder,_Node* child)
 		{
-            XMLDocument newdoc; std::string newfile = child->find_keyValue("source");
+            XMLDocument newdoc; std::string newfile = child->AttributesList["source"].toString();
 			LoadValue Result = newdoc.load((folder + newfile).c_str());
 			if (Result == FileNotFound)
 			{std::cerr << folder + newfile << " : Could not be found "; return Fail;}
@@ -473,7 +466,7 @@ namespace CAP {
 		}
 		std::string get_CLASS_ID(CAP::_Node * node) {
 			
-			std::string CLASS = node->find_keyValue("class");
+			std::string CLASS = node->AttributesList["class"].toString();
 			if (!CLASS.empty()) {
 				for (int i = 0; i < PropertyTypes->Class_IDs.size(); i++)
 					if (PropertyTypes->Class_IDs[i] == CLASS)
@@ -510,17 +503,20 @@ namespace CAP {
 		{   
 			
 			std::cerr<<"Loading "+FILE<<" ... \n";
+			
 			Clock appClock; // Used to get Loading time
-            
+               
 			if (PropertyTypes->read(FOLDER+"propertytypes.json"))
 			{   LoadValue Result = Map->load((FOLDER + FILE).c_str()) ;
-				if (Result == Successful) {
-					Properties.infinite  = stoi(Map->Root->Children[0]->find_keyValue("infinite"));
+				if (Result == Successful) { 
+					
+					Properties.infinite  = Map->Root->Children[0]->AttributesList["infinite"].toInt();
+					
 					for (_Node* child : Map->Root->Children[0]->Children)
-					{
+					{    
 						if (child->tag == "tileset") 
 							{if(!NewTileSet(FOLDER , child))return FAIL;}
-
+                              
 						if (child->tag == "objectgroup")    // Save all object layers
 						{
 
@@ -529,36 +525,29 @@ namespace CAP {
 								if (ITEM->tag != "properties")
 								{
 									std::string ID = get_CLASS_ID(ITEM);
-									if (!ID.empty())
-										ITEM->replace_keyValue("class", ID.c_str());
-									else
-									{
-										std::cerr << "Error : Class '" << ITEM->find_keyValue("class") << "' is undefined";
-										return Fail;
-									}
+									if (ID.empty())
+										{std::cerr << "Error : Class '" <<
+										   ITEM->AttributesList["class"].toString() 
+										    << "' is undefined";
+										return Fail;}	
 								}
-
 							}
-
 							Data.ObjectLayers.push_back(*child);
 								     
 						}
-
 						if (child->tag == "imagelayer")    // Save all image layers
 							Data.Imagelayers.push_back(*child);
 						if (child->tag == "layer")
 							Data.TileLayers.push_back(_TileLayer(*child,Properties.infinite));
-							
-
 					}
 					
 					std::cout << "Tilemap " << FILE << " :  has loaded succesfully \n";
                     std::cout<<"Loading time : "<<appClock.elapsedTime()<<"ms\n";
-					Properties.width       = stoi(Map->Root->Children[0]->find_keyValue("width"));
-					Properties.height      = stoi(Map->Root->Children[0]->find_keyValue("height"));
-					Properties.Tile_Width  = stoi(Map->Root->Children[0]->find_keyValue("tilewidth"));
-					Properties.Tile_Height = stoi(Map->Root->Children[0]->find_keyValue("tileheight"));
-					Properties.Orientation = Map->Root->Children[0]->find_keyValue("orientation");
+					Properties.width       = Map->Root->Children[0]->AttributesList["width"].toInt();
+					Properties.height      = Map->Root->Children[0]->AttributesList["height"].toInt();
+					Properties.Tile_Width  = Map->Root->Children[0]->AttributesList["tilewidth"].toInt();
+					Properties.Tile_Height = Map->Root->Children[0]->AttributesList["tileheight"].toInt();
+					Properties.Orientation = Map->Root->Children[0]->AttributesList["orientation"].toInt();
 					
 				}
 				else if (Result == FileNotFound) {

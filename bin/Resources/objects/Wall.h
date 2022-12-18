@@ -1,24 +1,21 @@
 #ifndef WALL_H_INCLUDED
 #define WALL_H_INCLUDED
-#include "_Object.h"
 
- class Wall : public _Object
+
+class WALL: public Object
 {
-public:
-	int _x, _y = 0;
-	Wall(int x, int y) {
-		_x = x; _y = y;
-	}
-	Wall()
-	{
-		_x = 0; _y = 0;
-	}
-	static void onCreate(Environment* Data, CAP::_Node* new_Object)
-	{
-		int x = atof(new_Object->find_keyValue("x").c_str());
-		int y = atof(new_Object->find_keyValue("x").c_str());
-		Data->AllWalls.push_back(new Wall(x, y));
-	}
+   public:
+   int x=0;int y=0;
+   Object* onCreate(CAP::_Node * OBJ_Data)
+   {
+    WALL *newObject= new WALL;
+    newObject->x= OBJ_Data->AttributesList["x"].toInt();
+    newObject->y= OBJ_Data->AttributesList["y"].toInt();
+    return newObject;
+   }
+   void onUpdate(Environment *env)
+   {
+   std::cout<<x<<y<<'\n';}
 };
 
 #endif // WALL_H_INCLUDED 
