@@ -213,7 +213,6 @@ namespace CAP {
 							position++;
 							continue;
 						}
-
 					}
 					else {
 						if (Buffer[position] != '\n' && Buffer[position] != '>')
@@ -228,32 +227,17 @@ namespace CAP {
 
 	};
 
-    // Used to save a key and it's value <key="value"> 
-    struct _KEY_STRUCT
-		{
-		std::string key   ="\0";   // Name of the Attribute
-		std::string value ="\0";   // Value of the key
-		};
-
     struct ListClass {
 		std::string Tag;
 		std::vector<std::string> Data;
 	};
 
 	struct _Member
-	{
-		std::vector<_KEY_STRUCT> Keys;
+	{    
+		std::map<std::string,_Variable> Keys;
 		std::vector<ListClass> List;
 		std::vector<_Member> Members;
 		std::string  Type;
-		std::string find_keyValue(std::string KEY)
-		{
-			for (_KEY_STRUCT& Data : Keys)
-				if (Data.key == KEY)
-					return Data.value;
-			return "\0";
-		}
-
 	};
 
 	class JParser {
@@ -271,20 +255,21 @@ namespace CAP {
 				{
 					position++;
 					
-					_KEY_STRUCT newKeys;
+					std::string Key;
 					while (Buffer[position] != '"')
-						newKeys.key.push_back(Buffer[position++]);
+						Key.push_back(Buffer[position++]);
 					
 					position += 3;
 					if (Buffer[position] == '"')
-					{
+					{    
+						std::string Value; //Sore the key value
 						position++;
 						while (Buffer[position] != '"')
-						    newKeys.value.push_back(Buffer[position++]);
-						if (newKeys.key == "type")
-							newM.Type = newKeys.value;
+						    Value.push_back(Buffer[position++]);
+						if (Key == "type")
+							newM.Type = Value;
 							
-							newM.Keys.push_back(newKeys);
+							newM.Keys[Key]=Value;
 							position++;
 							
 							continue;
@@ -302,11 +287,11 @@ namespace CAP {
 						}
 						else if (Buffer[position] != ' ')
 						{
-						
-							while (Buffer[position] != ' ' &&  Buffer[position] != ',')								
-								newKeys.value.push_back(Buffer[position++]);
+						     std::string Value; // Store the key value
+ 							while (Buffer[position] != ' ' &&  Buffer[position] != ',')								
+								Value.push_back(Buffer[position++]);
 							
-							newM.Keys.push_back(newKeys);
+							newM.Keys[Key]=Value;
 							continue;
 						}
 				}
@@ -315,26 +300,20 @@ namespace CAP {
 			return newM;
 		 }
 
-
-
 	public:
 		
 		_Member Root;
-		std::vector<std::string> Class_IDs;
-
-		bool read(std::string Json_File)
+		
+		bool read(std::string Json_File, std::map<std::string,_Member>* Class_Properties = nullptr)
 		{
-			Class_IDs.resize(64);
+			
 			std::ifstream file(Json_File);
 			if (file.is_open()) {
 				 Buffer = std::string((std::istreambuf_iterator<char>(file)), // The buffer is used to store all data from the file
 					std::istreambuf_iterator<char>());
 				
-				
 				std::string  Search;       // Saves text as going through the document
 				lenght = Buffer.size();    // Lenght of the XML doc
-				
-				
 
 				while (position < lenght-1 )
 				{
@@ -343,15 +322,11 @@ namespace CAP {
 					
 				   position++;
 				}
-
+                    
+				if(Class_Properties)
 				for (auto &ITEM : Root.Members)
 					if (ITEM.Type == "class")
-						for (auto& PROPERTIES : ITEM.Members)
-							if (PROPERTIES.find_keyValue("name") == "Class_ID")
-							{
-								Class_IDs[atoi(PROPERTIES.find_keyValue("value").c_str())]
-									= ITEM.find_keyValue("name");
-							}
+					 Class_Properties->operator[](ITEM.Keys["name"].toString())=ITEM;
 				return 1;
 			}
 			else { 
@@ -359,8 +334,8 @@ namespace CAP {
 				return 0; }
 		}
 
-	};
 
+	};
 
 	struct _TileSet
 	{   
@@ -444,12 +419,11 @@ namespace CAP {
 		}
 	};
 
-
 	class TileMapFile
 	{
 		XMLDocument* Map = nullptr;
 		JParser* PropertyTypes = nullptr;
-        
+     
         LoadValue NewTileSet(std::string folder,_Node* child)
 		{
             XMLDocument newdoc; std::string newfile = child->AttributesList["source"].toString();
@@ -460,21 +434,15 @@ namespace CAP {
 			else if (Result == Successful)
 			{std::cout << "Tileset " << newfile << " : has loaded succesfully \n"; 
 		    Data.TileSets.push_back(_TileSet(newdoc.Root->Children[0])); // Load the tilesets 
-			return Successful;}
-
+			return Successful;
+			}
 			return Fail;
 		}
-		std::string get_CLASS_ID(CAP::_Node * node) {
-			
-			std::string CLASS = node->AttributesList["class"].toString();
-			if (!CLASS.empty()) {
-				for (int i = 0; i < PropertyTypes->Class_IDs.size(); i++)
-					if (PropertyTypes->Class_IDs[i] == CLASS)
-						return std::to_string(i);
-			}
-			return "\0";
+		
+	     bool  is_Class_defined(CAP::_Node * node) {
+		     return Class_Properties.count(node->AttributesList["class"].toString());
 		}
-
+     
 	public:
 		TileMapFile()
 		{Map = new XMLDocument;
@@ -498,6 +466,10 @@ namespace CAP {
 		int height =0;
 		}Properties;
 		//<-------Map properties------->//
+          
+		/* Data about all the classes inside "propertytypes.json"
+		 Class_Properties["Name of class"]-> Data (json)  */
+		std::map<std::string,_Member> Class_Properties;
 
 		bool load(std::string FOLDER, std::string FILE)
 		{   
@@ -506,32 +478,29 @@ namespace CAP {
 			
 			Clock appClock; // Used to get Loading time
                
-			if (PropertyTypes->read(FOLDER+"propertytypes.json"))
+			if (PropertyTypes->read(FOLDER+"propertytypes.json",&Class_Properties))
 			{   LoadValue Result = Map->load((FOLDER + FILE).c_str()) ;
 				if (Result == Successful) { 
 					
-					Properties.infinite  = Map->Root->Children[0]->AttributesList["infinite"].toInt();
+					_Node *Map_Data     = Map->Root->Children[0];
+					Properties.infinite = Map_Data ->AttributesList["infinite"].toInt();
 					
-					for (_Node* child : Map->Root->Children[0]->Children)
+					for (_Node* child : Map_Data ->Children)
 					{    
 						if (child->tag == "tileset") 
 							{if(!NewTileSet(FOLDER , child))return FAIL;}
                               
 						if (child->tag == "objectgroup")    // Save all object layers
 						{
-
 							for (auto ITEM : child->Children)
-							{
 								if (ITEM->tag != "properties")
-								{
-									std::string ID = get_CLASS_ID(ITEM);
-									if (ID.empty())
-										{std::cerr << "Error : Class '" <<
-										   ITEM->AttributesList["class"].toString() 
+								   if (!is_Class_defined(ITEM))
+									{ 
+									std::cerr << "Error : Class '" <<
+									ITEM->AttributesList["class"].toString() 
 										    << "' is undefined";
-										return Fail;}	
-								}
-							}
+									return Fail;}	
+								
 							Data.ObjectLayers.push_back(*child);
 								     
 						}
@@ -542,12 +511,13 @@ namespace CAP {
 					}
 					
 					std::cout << "Tilemap " << FILE << " :  has loaded succesfully \n";
-                    std::cout<<"Loading time : "<<appClock.elapsedTime()<<"ms\n";
-					Properties.width       = Map->Root->Children[0]->AttributesList["width"].toInt();
-					Properties.height      = Map->Root->Children[0]->AttributesList["height"].toInt();
-					Properties.Tile_Width  = Map->Root->Children[0]->AttributesList["tilewidth"].toInt();
-					Properties.Tile_Height = Map->Root->Children[0]->AttributesList["tileheight"].toInt();
-					Properties.Orientation = Map->Root->Children[0]->AttributesList["orientation"].toInt();
+                         std::cout<<"Loading time : "<<appClock.elapsedTime()<<"ms\n";
+
+					Properties.width       = Map_Data->AttributesList["width"].toInt();
+					Properties.height      = Map_Data->AttributesList["height"].toInt();
+					Properties.Tile_Width  = Map_Data->AttributesList["tilewidth"].toInt();
+					Properties.Tile_Height = Map_Data->AttributesList["tileheight"].toInt();
+					Properties.Orientation = Map_Data->AttributesList["orientation"].toInt();
 					
 				}
 				else if (Result == FileNotFound) {

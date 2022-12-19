@@ -23,6 +23,7 @@ class App
                 Env.add_OBJ(item);}
 
             Env.update();
+            
        }
        
     }
