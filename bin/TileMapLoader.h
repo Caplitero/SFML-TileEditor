@@ -26,11 +26,20 @@ namespace CAP {
     class Clock
 	{std::chrono::system_clock::time_point _STARTING_POINT;
     public:
+      class _Time_Conversion
+      {   int value=0 ;
+		public:
+		_Time_Conversion(int Time){value = Time;}
+		float asSeconds(){return value/1e9f;}
+		float asMilliSeconds(){return value/1e6f;}
+		int asNanoSeconds(){return value;}
+	 };
 	Clock(){_STARTING_POINT= std::chrono::system_clock::now();}
 		 // Return the elapsed time in milliseconds 
-		 inline int elapsedTime(){  
-			return std::chrono::duration_cast<std::chrono::milliseconds>
-			      (std::chrono::system_clock::now() -_STARTING_POINT).count();}};
+		 inline _Time_Conversion elapsedTime(){  
+			
+			return _Time_Conversion( std::chrono::duration_cast<std::chrono::nanoseconds>
+			      (std::chrono::system_clock::now() -_STARTING_POINT).count());}};
     
     // Struct used for easier manipulation of Data
      struct _Variable
@@ -511,7 +520,7 @@ namespace CAP {
 					}
 					
 					std::cout << "Tilemap " << FILE << " :  has loaded succesfully \n";
-                         std::cout<<"Loading time : "<<appClock.elapsedTime()<<"ms\n";
+                         std::cout<<"Loading time : "<<appClock.elapsedTime().asMilliSeconds()<<"ms\n";
 
 					Properties.width       = Map_Data->AttributesList["width"].toInt();
 					Properties.height      = Map_Data->AttributesList["height"].toInt();

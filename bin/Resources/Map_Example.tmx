@@ -25,7 +25,10 @@
 </data>
  </layer>
  <objectgroup id="2" name="Object Layer 1">
-  <object id="1" class="Class0" x="209.388" y="72.8307">
+  <object id="1" class="WALL" x="209.388" y="72.8307">
+   <polygon points="0,0 449.73,14.5661 278.578,404.211 -94.6799,325.917 247.624,163.869"/>
+  </object>
+  <object id="1" class="WALL" x="209.388" y="72.8307">
    <polygon points="0,0 449.73,14.5661 278.578,404.211 -94.6799,325.917 247.624,163.869"/>
   </object>
  </objectgroup>

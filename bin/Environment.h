@@ -4,15 +4,29 @@
 #include "TileMapLoader.h"
 #include "Resources/objects/Base_Object.h"
 
+#include <memory>
+#include <cstring>
+#include <map>
 #include <algorithm>
-#include <unordered_map>
 #include <functional>
 
+
+
+// Initialize classes used to create objects
+template<class U>
+std::pair<std::string,std::shared_ptr<Object>> add_Class()
+{
+   std::shared_ptr<Object> ptr(new U);
+   ptr->__init__();
+   return std::make_pair(ptr.get()->get_Class(),ptr);
+}
+
 class Environment{
-      std::vector<Object*> ALL_OBJECTS;
+      std::vector<std::shared_ptr<Object>> ALL_OBJECTS;
+      
    public :
    
-   Environment(){ALL_OBJECTS.reserve(128);}
+   Environment(){ALL_OBJECTS.reserve(1000001);}
    void add_OBJ(CAP::_Node * NewObject);
 
    template <typename T>
@@ -30,9 +44,10 @@ class Environment{
    }
 
    void update()
-   {
-      for(Object * Curret_Object:ALL_OBJECTS)
-         Curret_Object->onUpdate(this);
+   {  
+      for(auto item : ALL_OBJECTS)
+        item->onUpdate(this);
+      
    }
     
     
@@ -43,8 +58,12 @@ class Environment{
 void Environment::add_OBJ(CAP::_Node * Object_Data)
 {    
      std::string CLASS  =  Object_Data->AttributesList["class"].toString();
-     Object*     Parent =  Class_Constr[CLASS];
-     ALL_OBJECTS.push_back(Parent->onCreate(Object_Data));
+     Object*     Parent =  Class_Constr[CLASS].get(); 
+     std::shared_ptr<Object> Child(Parent->clone()); 
+     Child->onCreate(Object_Data);
+
+     ALL_OBJECTS.emplace_back(Child);
+     
 }
 
 #endif 

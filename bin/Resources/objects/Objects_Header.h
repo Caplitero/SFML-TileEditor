@@ -4,9 +4,9 @@
 ///---------Include Objects---------///
 
 
-std::unordered_map <std::string,Object*> Class_Constr=
+std::map <std::string,std::shared_ptr<Object>> Class_Constr=
 {
-{"Class0", new WALL}
+add_Class<WALL>()
 
 };
 
