@@ -26,7 +26,7 @@ class Environment{
       
    public :
    
-   Environment(){ALL_OBJECTS.reserve(1000001);}
+   Environment(){ALL_OBJECTS.reserve(128);}
    void add_OBJ(CAP::_Node * NewObject);
 
    template <typename T>
